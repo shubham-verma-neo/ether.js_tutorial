@@ -16,7 +16,7 @@ const contractJSON = require('./contracts/testEther.json')
 
 console.log("Provider");
 
-const broadcastTransaction = async () => {
+const providerBroadcastTransaction = async () => {
   console.log("provider.broadcastTransaction(signedTx: string)") //tx.hash = 0xb1054e76606822f4ecb65348f78307b3df61f9cccebab239dc358e3568e04c4a
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -42,11 +42,11 @@ const broadcastTransaction = async () => {
   console.log('Transaction hash:', transactionResponse.hash);
 }
 
-// broadcastTransaction()
+// providerBroadcastTransaction()
 
 //================================================================================================================================================//
 
-const call = async () => {
+const providerCall = async () => {
   console.log("provider.call(tx: TransactionRequest)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -96,11 +96,11 @@ const call = async () => {
   console.log("addressDecodedResult: ", addressDecodedResult);
 }
 
-// call();
+// providerCall();
 
 //================================================================================================================================================//
 
-const destroy = async () => {
+const providerDestroy = async () => {
   console.log("provider.destroy")
 
   let provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -109,12 +109,12 @@ const destroy = async () => {
   //the provider object will be automatically garbage collected by JavaScript when it's no longer referenced, 
   //  which effectively disconnects and cleans up the resources associated with it.
 }
-// destroy();
+// providerDestroy();
 
 //================================================================================================================================================//
 
 
-const estimateGas = async () => {
+const providerEstimateGas = async () => {
   console.log("provider.estimateGas(tx: TransactionRequest)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -135,12 +135,12 @@ const estimateGas = async () => {
     console.error('Error estimating gas:', error);
   }
 }
-// estimateGas();
+// providerEstimateGas();
 
 //================================================================================================================================================//
 
 
-const getBalance = async () => {
+const providerGetBalance = async () => {
   console.log("provider.getBalance(address: AddressLike, blockTag?: BlockTag)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -151,11 +151,11 @@ const getBalance = async () => {
     .then(e => { console.log(ethers.formatEther(e)) })
     .catch(err => { console.log(err) });
 }
-// getBalance();
+// providerGetBalance();
 
 //================================================================================================================================================//
 
-const getBlock = async () => {
+const providerGetBlock = async () => {
   console.log("provider.getBlock(blockHashOrBlockTag: BlockTag | string, prefetchTxs?: boolean)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -170,11 +170,11 @@ const getBlock = async () => {
     .then(e => { console.log("Block Details: ", e) })
     .catch(err => { console.log("err: ", err) });
 }
-// getBlock();
+// providerGetBlock();
 
 //================================================================================================================================================//
 
-const getCode = async () => {
+const providerGetCode = async () => {
   console.log("provider.getCode(address: AddressLike, blockTag?: BlockTag)")
 
   //The getCode method in Ether.js is used to retrieve the bytecode of a contract deployed on 
@@ -186,11 +186,11 @@ const getCode = async () => {
     .then(e => { console.log("ByteCode: ", e) })
     .catch(err => { console.log("err: ", err) });
 }
-// getCode();
+// providerGetCode();
 
 //================================================================================================================================================//
 
-const getFeeData = async () => {
+const providerGetFeeData = async () => {
   console.log("provider.getFeeData()")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -199,11 +199,11 @@ const getFeeData = async () => {
     .then(e => { console.log("FeeData: ", e) })
     .catch(err => { console.log("err: ", err) });
 }
-// getFeeData();
+// providerGetFeeData();
 
 //================================================================================================================================================//
 
-const getLogs = async () => {
+const providerGetLogs = async () => {
   console.log("provider.getLogs(filter: Filter | FilterByBlockHash)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -231,11 +231,11 @@ const getLogs = async () => {
     console.log('Data:', log.data);
   });
 }
-// getLogs();
+// providerGetLogs();
 
 //================================================================================================================================================//
 
-const getNetwork = async () => {
+const providerGetNetwork = async () => {
   console.log("provider.getNetwork()")
 
   // const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
@@ -250,11 +250,11 @@ const getNetwork = async () => {
       console.error('Error retrieving network information:', error);
     })
 }
-// getNetwork();
+// providerGetNetwork();
 
 //================================================================================================================================================//
 
-const getStorage = async () => {
+const providerGetStorage = async () => {
   console.log("provider.getStorage(address: AddressLike, position: BigNumberish, blockTag?: BlockTag)")
 
   // const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
@@ -274,11 +274,11 @@ const getStorage = async () => {
     console.error('Error retrieving contract storage:', error);
   }
 }
-// getStorage();
+// providerGetStorage();
 
 //================================================================================================================================================//
 
-const getTransaction = async () => {
+const providerGetTransaction = async () => {
   console.log("provider.getTransaction(hash: string)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -302,11 +302,11 @@ const getTransaction = async () => {
       console.error('Error:', error);
     });
 }
-// getTransaction();
+// providerGetTransaction();
 
 //================================================================================================================================================//
 
-const getTransactionCount = async () => {
+const providerGetTransactionCount = async () => {
   console.log("provider.getTransactionCount(address: AddressLike, blockTag?: BlockTag)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -321,11 +321,11 @@ const getTransactionCount = async () => {
     console.error('Error fetching transaction count:', error);
   }
 }
-// getTransactionCount();
+// providerGetTransactionCount();
 
 //================================================================================================================================================//
 
-const getTransactionReceipt = async () => {
+const providerGetTransactionReceipt = async () => {
   console.log("provider.getTransactionReceipt(hash: string)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -344,11 +344,11 @@ const getTransactionReceipt = async () => {
       console.error(error);
     });
 }
-// getTransactionReceipt();
+// providerGetTransactionReceipt();
 
 //================================================================================================================================================//
 
-const getTransactionResult = async () => {
+const providerGetTransactionResult = async () => {
   console.log("provider.getTransactionResult(hash: string)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -370,11 +370,11 @@ const getTransactionResult = async () => {
       console.error(error);
     });
 }
-// getTransactionResult();
+// providerGetTransactionResult();
 
 //================================================================================================================================================//
 
-const lookupAddress = async () => {
+const providerLookupAddress = async () => {
   console.log("provider.lookupAddress(address: string)")
 
   const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
@@ -389,11 +389,11 @@ const lookupAddress = async () => {
     console.error('Error retrieving ENS name:', error);
   }
 }
-// lookupAddress();
+// providerLookupAddress();
 
 //================================================================================================================================================//
 
-const resolveName = async () => {
+const providerResolveName = async () => {
   console.log("provider.resolveName(ensName: string)")
 
   const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
@@ -408,11 +408,11 @@ const resolveName = async () => {
     console.log(`Failed to resolve ENS name ${ensName}: ${error.message}`);
   }
 }
-// resolveName();
+// providerResolveName();
 
 //================================================================================================================================================//
 
-const waitForBlock = async () => {
+const providerWaitForBlock = async () => {
   console.log("Not Working")
   console.log("provider.waitForBlock(blockTag?: BlockTag)")
 
@@ -442,11 +442,11 @@ const waitForBlock = async () => {
     console.log("err: ", err);
   }
 }
-// waitForBlock();
+// providerWaitForBlock();
 
 //================================================================================================================================================//
 
-const waitForTransaction = async () => {
+const providerWaitForTransaction = async () => {
   console.log("provider.waitForTransaction(hash: string, confirms?: number, timeout?: number)")
 
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
@@ -463,7 +463,7 @@ const waitForTransaction = async () => {
     console.error(error);
   }
 }
-// waitForTransaction();
+// providerWaitForTransaction();
 
 //================================================================================================================================================//
 //================================================================================================================================================//
