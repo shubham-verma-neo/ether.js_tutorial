@@ -238,7 +238,7 @@ const providerGetLogs = async () => {
 const providerGetNetwork = async () => {
   console.log("provider.getNetwork()")
 
-  // const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
+  // const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.Infura_Key}`);
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
 
   await provider.getNetwork()
@@ -257,7 +257,7 @@ const providerGetNetwork = async () => {
 const providerGetStorage = async () => {
   console.log("provider.getStorage(address: AddressLike, position: BigNumberish, blockTag?: BlockTag)")
 
-  // const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
+  // const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.Infura_Key}`);
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
 
   // Specify the contract address
@@ -377,7 +377,7 @@ const providerGetTransactionResult = async () => {
 const providerLookupAddress = async () => {
   console.log("provider.lookupAddress(address: string)")
 
-  const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
+  const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.Infura_Key}`);
 
   // Specify the address
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -396,7 +396,7 @@ const providerLookupAddress = async () => {
 const providerResolveName = async () => {
   console.log("provider.resolveName(ensName: string)")
 
-  const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
+  const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.Infura_Key}`);
 
   // Specify the ENS name
   const ensName = 'vitalik.eth';
@@ -416,7 +416,7 @@ const providerWaitForBlock = async () => {
   console.log("Not Working")
   console.log("provider.waitForBlock(blockTag?: BlockTag)")
 
-  // const provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/003dc138d48f46d2b74c5df28b3cc123');
+  // const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.Infura_Key}`);
   const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
 
   try {
@@ -467,3 +467,434 @@ const providerWaitForTransaction = async () => {
 
 //================================================================================================================================================//
 //================================================================================================================================================//
+
+/*
+  Signer
+    - A Signer represents an account on the Ethereum Blockchain, and is most often backed by a private key represented 
+        by a mnemonic or residing on a Hardware Wallet.
+    - The API remains abstract though, so that it can deal with more advanced exotic Signing entities, such as 
+        Smart Contract Wallets or Virtual Wallets (where the private key may not be known).
+*/
+console.log("Signer");
+
+/*
+- In terms of retrieving data from a read-only function of a smart contract, the functionality is similar between 
+    provider.call() and signer.call(). Both methods allow you to execute a read-only function and retrieve the result 
+    from the Ethereum blockchain.
+
+- Using either method, you can obtain the output or return value of a read-only function without modifying the blockchain 
+    state. The primary difference lies in how the function call is initiated and the context in which it is executed.
+
+- With provider.call(), you directly call the function using the Ethereum provider without the need for signing a 
+    transaction. It is a convenient way to retrieve data from the blockchain without involving a specific signer 
+    or account.
+
+- On the other hand, signer.call() requires a signer object, which represents an Ethereum account and provides the ability
+    to sign transactions. This method involves signing the transaction locally but not submitting it to the blockchain, 
+    making it suitable for read-only operations.
+
+- In summary, while the functionality of retrieving data from a read-only function is the same, the usage of provider.call()
+    and signer.call() may vary based on the context of your application and the need for a specific signer.
+*/
+
+const signerCall = async () => {
+  console.log("signer.call(tx: TransactionRequest)");
+  // Connect to an Ethereum node using a JSON-RPC URL
+  const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+
+  // Get the signer from the provider
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+  // Define the contract address and ABI
+  const contractAddress = contractJSON.networks[80001].address; // Replace with the contract's address
+  const contractABI = [
+    "function myUint() view returns (uint256)",
+    "function myAddress() view returns (address)"
+  ]; // Replace with the contract's ABI
+
+  // Create a contract instance
+  const contractInstance = new ethers.Contract(contractAddress, contractABI, provider);
+
+
+  // Function name and parameters
+  let functionName = 'myUint';
+  // let functionParams = [param1, param2]; // Replace with the actual function parameters if any
+
+
+  // Prepare the transaction request object for the read-only function
+  let transaction = {
+    to: contractInstance.target,
+    // data: contractInstance.interface.encodeFunctionData('functionName', [param1, param2]), // Replace with the function name and parameters
+    data: contractInstance.interface.encodeFunctionData(functionName), // Replace with the function name and parameters
+  };
+
+  // Call the read-only function using the signer
+  const myUint = await signer.call(transaction);
+
+  // Decode the myUint
+  const uintDecodedResult = contractInstance.interface.decodeFunctionResult(functionName, myUint);
+
+  console.log("uintDecodedResult: ", uintDecodedResult);
+
+  // Function name and parameters
+  functionName = 'myAddress';
+  // functionParams = [param1, param2]; // Replace with the actual function parameters if any
+
+
+  // Prepare the transaction request object for the read-only function
+  transaction = {
+    to: contractInstance.target,
+    // data: contractInstance.interface.encodeFunctionData('functionName', [param1, param2]), // Replace with the function name and parameters
+    data: contractInstance.interface.encodeFunctionData(functionName), // Replace with the function name and parameters
+  };
+
+  // Call the read-only function using the signer
+  const myAddress = await signer.call(transaction);
+
+  // Decode the myAddress
+  const addressDecodedResult = contractInstance.interface.decodeFunctionResult(functionName, myAddress);
+
+  console.log("addressDecodedResult: ", addressDecodedResult);
+
+}
+// signerCall();
+
+//================================================================================================================================================//
+
+const signerConnect = async () => {
+  console.log("signer.connect(provider: null | Provider)");
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+  /*
+    Wallet {
+      provider: null,
+      address: '0x158C4BdD582370598Ce558aD9Be00859DCdB4410'
+    }
+  */
+
+  // Create a JsonRpcProvider
+  const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+
+  // Connect the Wallet Signer to the provider
+  const connectedSigner = signer.connect(provider);
+  // console.log(connectedSigner)
+  /*
+    Wallet {
+      provider: JsonRpcProvider { },
+      address: '0x158C4BdD582370598Ce558aD9Be00859DCdB4410'
+    }
+  */
+}
+// signerConnect();
+
+//================================================================================================================================================//
+
+const signerEstimateGas = async () => {
+  console.log("signer.estimateGas(tx: TransactionRequest)");
+
+  // Create a JsonRpcProvider
+  const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+  const transaction = {
+    from: signer.address,
+    to: process.env.Recipient_Address,
+    value: ethers.parseEther("1.0"),
+  };
+  console.log(transaction)
+
+  try {
+    const gasEstimate = await signer.estimateGas(transaction);
+    console.log(`Estimated gas: ${gasEstimate.toString()}`);
+  } catch (error) {
+    console.error('Error estimating gas:', error);
+  }
+
+}
+// signerEstimateGas();
+
+//================================================================================================================================================//
+
+const signerGetAddress = async () => {
+  console.log("signer.getAddress()");
+
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+
+  // Get the Ethereum address associated with the signer
+  const address = await signer.getAddress();
+  console.log('Address:', address);
+}
+// signerGetAddress();
+
+//================================================================================================================================================//
+
+const signerGetNonce = async () => {
+  console.log("signer.getNonce(blockTag?: BlockTag)");
+
+  try {
+    // Connect to an Ethereum node using a provider
+    const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+
+    // Create a Wallet Signer using a private key
+    const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+    // console.log(signer)
+
+    // Connect the Signer to the provider
+    const signerConnected = signer.connect(provider);
+    // console.log(signerConnected)
+
+    // Get the nonce (transaction count) for the account
+    const nonce = await signerConnected.getNonce();
+
+    console.log(`Nonce: ${nonce}`);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+// signerGetNonce();
+
+//================================================================================================================================================//
+
+const signerPopulateCall = async () => {
+  console.log("signer.populateCall(tx: TransactionRequest)");
+
+  // Connect to an Ethereum node using a provider
+  const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+  // Connect the Signer to the provider
+  const signerConnected = signer.connect(provider);
+  // console.log(signerConnected)
+
+  // Create a contract instance
+  const contractAddress = contractJSON.networks[80001].address; // Replace with the contract's address
+  const contractABI = [
+    "function myUint() view returns (uint256)",
+    "function myAddress() view returns (address)"
+  ]; // Replace with the contract's ABI
+  const contract = new ethers.Contract(contractAddress, contractABI, signerConnected);
+  console.log(contract)
+  // Define the function you want to call
+  const functionName = 'myUint'; // Replace with the function name
+  // const functionParams = ['param1', 'param2']; // Replace with the function parameters
+
+  // Populate the call transaction
+  const callTransaction = await contract.populateTransaction[functionName];
+  // const callTransaction = await contract.populateTransaction[functionName](...functionParams);
+
+  console.log(callTransaction)
+}
+// signerPopulateCall();
+
+//================================================================================================================================================//
+
+const signerPopulateTransaction = async () => {
+  console.log("signer.populateTransaction(tx: TransactionRequest)");
+
+  // Connect to an Ethereum node using a provider
+  const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+  // Connect the Signer to the provider
+  const signerConnected = signer.connect(provider);
+  // console.log(signerConnected)
+
+  // Create a transaction request object
+  const tx = {
+    to: process.env.Recipient_Address, // Replace with the recipient's address
+    value: ethers.parseEther('1.0'), // Replace with the desired value
+    gasLimit: 21000, // Replace with the desired gas limit
+    gasPrice: ethers.parseUnits('30', 'gwei') // Replace with the desired gas price
+  };
+
+  // Populate the transaction object with the necessary fields
+  const populatedTx = await signerConnected.populateTransaction(tx);
+
+  console.log(populatedTx);
+}
+// populateTransaction();
+
+//================================================================================================================================================//
+
+const signerResolveName = async (name) => {
+  console.log("signer.resolveName(name: string)");
+
+  // Connect to an Ethereum node using a provider
+  const provider = new ethers.JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.Infura_Key}`);
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+  // Connect the Signer to the provider
+  const signerConnected = signer.connect(provider);
+  // console.log(signerConnected)
+
+  try {
+    // Resolve the ENS name to an Ethereum address
+    const address = await signerConnected.resolveName(name);
+    console.log(`Resolved address for ${name}: ${address}`);
+  } catch (error) {
+    console.error('Failed to resolve ENS name:', error);
+  }
+}
+// signerResolveName('vitalik.eth');
+
+//================================================================================================================================================//
+
+const signerSendTransaction = async () => {
+  console.log("signer.sendTransaction(tx: TransactionRequest)");
+
+  // Connect to an Ethereum node using a provider
+  const provider = new ethers.JsonRpcProvider(`https://rpc-mumbai.maticvigil.com`);
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+  // Connect the Signer to the provider
+  const signerConnected = signer.connect(provider);
+  // console.log(signerConnected)
+
+  // Define the transaction parameters
+  const transaction = {
+    to: process.env.Recipient_Address, // Replace with the recipient's address
+    value: ethers.parseEther('1.0'), // Replace with the desired value
+    gasLimit: 21000, // Replace with the desired gas limit
+    gasPrice: ethers.parseUnits('50', 'gwei'), // Replace with the desired gas price
+    nonce: await provider.getTransactionCount(signer.address), // Retrieve the current nonce of the sender's address
+  };
+
+  // Send the signed transaction
+  signerConnected.sendTransaction(transaction)
+    .then((tx) => {
+      console.log('Transaction sent:', tx.hash);
+      return tx.wait(); // Wait for the transaction to be mined
+    })
+    .then((receipt) => {
+      console.log('Transaction mined:', receipt.transactionHash);
+      console.log('Gas used:', receipt.gasUsed.toString());
+    })
+    .catch((error) => {
+      console.error('Error sending transaction:', error);
+    });
+}
+// signerSendTransaction();
+
+//================================================================================================================================================//
+
+const signerSignMessage = async () => {
+  console.log("signer.signMessage(message: string | Uint8Array)");
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+
+  // Define the message to sign
+  const message = 'Hello, Ether.js!';
+
+  // Sign the message using the Wallet Signer
+  const signatureCorrect = await signer.signMessage(message);
+  console.log('Signature Correct:', signatureCorrect);
+  const signatureIncorrect = signatureCorrect.replace('4', '1')
+  console.log('Signature Incorrect:', signatureIncorrect);
+
+  // Verify the signed message
+  const signerAddressCorrect = ethers.verifyMessage(message, signatureCorrect);
+  const signerAddressIncorrect = ethers.verifyMessage(message, signatureIncorrect);
+  console.log('Signer Address Correct:', signerAddressCorrect);
+  console.log('Signer Address Incorrect:', signerAddressIncorrect);
+}
+// signerSignMessage();
+
+//================================================================================================================================================//
+
+const signerSignTransaction = async () => {
+  console.log("signer.signTransaction(tx: TransactionRequest)");
+
+  // Connect to an Ethereum node using a provider
+  const provider = new ethers.JsonRpcProvider(`https://rpc-mumbai.maticvigil.com`);
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+  // Connect the Signer to the provider
+  const signerConnected = signer.connect(provider);
+  // console.log(signerConnected)
+
+
+  // Create a transaction object
+  const transaction = {
+    to: process.env.Recipient_Address, // Replace with the recipient's address
+    value: ethers.parseEther('1.0') // Replace with the desired value
+  };
+
+  // Sign the transaction
+  signerConnected.signTransaction(transaction)
+    .then((signedTransaction) => {
+      console.log('Signed Transaction:', signedTransaction);
+    })
+    .catch((error) => {
+      console.error('Error signing transaction:', error);
+    });
+}
+// signerSignTransaction();
+
+//================================================================================================================================================//
+
+const signerSignTypedData = async () => {
+  console.log("signer.signTypedData(domain: TypedDataDomain, types: Record< string, Array< TypedDataField > >, value: Record< string, any >)");
+
+  // Connect to an Ethereum node using a provider
+  const provider = new ethers.JsonRpcProvider(`https://rpc-mumbai.maticvigil.com`);
+
+  // Create a Wallet Signer using a private key
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // console.log(signer)
+
+  // Connect the Signer to the provider
+  const signerConnected = signer.connect(provider);
+  // console.log(signerConnected)
+
+
+  // Define the domain separator
+  const domain = {
+    name: 'MyContract',
+    version: '1.0',
+    chainId: 1,
+    verifyingContract: '0xabcdef123456789...', // Replace with the contract address
+  };
+
+  // Define the type definitions
+  const types = {
+    Person: [
+      { name: 'name', type: 'string' },
+      { name: 'age', type: 'uint256' },
+    ],
+  };
+
+  // Define the data to be signed
+  const value = {
+    name: 'Alice',
+    age: 25,
+  };
+
+  // Sign the typed data
+  const signature = await signerConnected.signTypedData(domain, types, value);
+  console.log(signature);
+}
+// signerSignTypedData();
